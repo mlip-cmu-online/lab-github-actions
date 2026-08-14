@@ -1,31 +1,50 @@
 # Lab 6: Continuous Integration with GitHub Actions
 
-In this lab, you will set up Continuous Integration (CI) using GitHub Actions.  
-You will practice enforcing test coverage thresholds, running a simple ML demo pipeline in CI, and switching from GitHub-hosted to self-hosted runners.  
-By the end, you should understand how CI helps maintain code quality, automate ML workflows, and integrate with custom infrastructure.
+In this lab, you will set up Continuous Integration (CI) using GitHub Actions.
+You will practice enforcing a test-coverage threshold, running a lightweight ML demo pipeline in CI, and interpreting failed and successful quality gates.
+The required workflow runs on a GitHub-hosted runner and does not use course credentials or live services.
+By the end, you should understand how CI helps maintain code quality and provides fast, reproducible feedback on ML infrastructure changes.
 
 ## Deliverables
 
-- [ ] **Deliverable 1:** Create a pull request that demonstrates one failing check below the coverage threshold and one passing check above it.
-      Save links to both runs, identify the decisive line in each log, and explain when a coverage threshold is useful.
+- [ ] **Deliverable 1:** Link a pull request that shows one deliberately failed coverage check followed by a successful check after the tests or implementation are improved.
+      Link both workflow runs, identify the line in each log that caused the result, and explain in two or three sentences when a coverage threshold is useful and what it cannot establish about test quality.
 
-- [ ] **Deliverable 2:** Configure the workflow to run on your self-hosted runner.
-      Save the workflow-run link and log evidence showing the `self-hosted` runner label, then explain one reason to choose each runner type.
+- [ ] **Deliverable 2:** Link the workflow file and a run showing that the required job executes on a GitHub-hosted runner without repository or course secrets.
+      In two or three sentences, explain one situation in which a self-hosted runner might be useful and one maintenance or security cost it introduces.
 
-- [ ] **Deliverable 3:** Run the ML demo pipeline as part of CI and save the workflow-run link and log line containing the model score.
-      Explain why running the ML demo pipeline in CI adds value beyond running it manually on a local machine.
+- [ ] **Deliverable 3:** Link a successful workflow run in which the lightweight ML demo pipeline executes and prints its model score.
+      Explain why a small reproducible pipeline check belongs in CI while full-scale model training commonly does not.
 
 
 ## Step 0: Repository Setup
 
 ### Create Your Repository
 
-1. Start from the [Lab 6 Template Repository](https://github.com/BhuvanashreeM/lab6-github-actions-template)
+1. Start from the [course Lab 6 Template Repository](https://github.com/mlip-cmu-online/lab-github-actions)
 2. Click **Use this template** at the top
 3. Name your repository: `lab6-actions-<your-first-name>`
 4. **Important:** Set visibility to **Private**
 
-> Note: Keeping the repository private is especially important when using self-hosted runners (which you will set up in Step 4), since workflow logs and any credentials used during execution could otherwise be exposed publicly. A private repo ensures this information remains restricted to you and your collaborators.
+> Keep the repository private and do not add course credentials or other secrets.
+> This lab uses only the supplied fixture data and requires no live service access.
+
+### Optional: Work in a Codespace
+
+After creating your own repository from the template, open that repository and
+select **Code → Codespaces → Create codespace on main**. Wait for the setup to
+finish, then verify the editing environment in its terminal:
+
+```bash
+python --version
+python -m pytest -q --cov=prediction_pipeline_demo --cov-report=term-missing
+```
+
+The supplied DevContainer uses Python 3.11 and installs `requirements.txt`; it
+does not need or request any repository or course secrets. A Codespace is only
+an optional editing and local-testing environment. The required CI evidence
+must still come from the pull-request checks and logs produced by the
+GitHub-hosted runner.
 
 ### Local Setup
 
@@ -54,6 +73,7 @@ Examine the output to understand which lines are executed and which are missing 
 ## Step 1: GitHub Actions CI Setup
 
 Open `.github/workflows/ci.yml` and familiarise yourself with the important terms and layout of a GitHub Actions workflow (jobs, steps, runs-on, etc.). Pay attention to the step “Run tests with coverage”.
+Confirm that the required job uses `runs-on: ubuntu-latest` and that the workflow does not reference repository or course secrets.
 
 Reproduce the command from the “Run tests with coverage” step once on your local machine. The current configuration uses a default coverage threshold of 50%:
 
@@ -78,9 +98,12 @@ Check  `.github/workflows/ci.yml` and complete the section marked for adding a s
 
 > Note: For your course project, we don’t expect you to run full training pipelines inside CI. In practice, GitHub Actions steps are best used for lightweight checks, tests, and validations. Here, the demo pipeline is included only as an exercise to illustrate how a command can be executed within a workflow.
 
-## Step 4: Self-Hosted Runner
+## Optional Extension: Self-Hosted Runner
 
-Until now, all workflows have been executed on GitHub-hosted servers. In this step, you will configure CI to run on your own machine using a self-hosted runner.
+The required lab ends after Step 3.
+If you want to compare runner models, you may configure a self-hosted runner on an isolated machine that you control.
+Do not install a runner on a shared course VM or a machine containing sensitive data unless course staff has explicitly approved that setup.
+Self-hosted workflows can execute repository-controlled code on the host, so remove the runner when the experiment is complete and do not expose credentials to the workflow.
 
 ### Setup
 
@@ -103,6 +126,8 @@ Until now, all workflows have been executed on GitHub-hosted servers. In this st
 
 Push to your branch to trigger CI. Check Actions logs to verify jobs run on your machine.
 
+After comparing the logs, restore the required workflow to a GitHub-hosted runner and remove the self-hosted runner from the repository settings and host.
+
 ## Additional Resources
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
@@ -118,9 +143,9 @@ pytest --cov=prediction_pipeline_demo --cov-report=term-missing
 ```
 Check which lines are missing.
 
-**Runner idle:**
+**Optional self-hosted runner idle:**
 - Ensure self-hosted runner is running (`./run.sh`)
 - Verify `runs-on` matches runner labels
 
-**Python errors:**
+**Optional self-hosted Python errors:**
 - Install Python 3.11 or 3.12 on your self-hosted machine
