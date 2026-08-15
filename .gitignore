@@ -35,6 +35,7 @@ Thumbs.db
 build/
 dist/
 *.egg-info/
+submission/
 
 # Data files (keep Housing.csv but ignore others)
 *.csv
