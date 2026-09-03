@@ -1,4 +1,4 @@
-# Lab 6: Continuous Integration with GitHub Actions
+# Lab: Continuous Integration with GitHub Actions
 
 In this lab, you will set up Continuous Integration (CI) using GitHub Actions.
 You will practice enforcing a test-coverage threshold, running a lightweight ML demo pipeline in CI, and interpreting failed and successful quality gates.
